@@ -37,8 +37,10 @@ function buildPopupContent(laporan) {
                 <span class="px-2 py-0.5 text-xs rounded-full ${statusClass}">${laporan.status_label}</span>
                 <span class="px-2 py-0.5 text-xs rounded-full bg-gray-100 text-gray-700">${laporan.kategori_nama}</span>
             </div>
+            ${laporan.alamat ? `<p class="text-sm text-gray-600 mb-1"><strong>Alamat:</strong> ${laporan.alamat}</p>` : ''}
             ${laporan.deskripsi ? `<p class="text-sm text-gray-600 mb-1">${laporan.deskripsi}</p>` : ''}
-            <p class="text-xs text-gray-400">Oleh ${laporan.pelapor} &middot; ${laporan.created_at}</p>
+            <p class="text-xs text-gray-400 mb-2">Oleh ${laporan.pelapor} &middot; ${laporan.created_at}</p>
+            ${laporan.detail_url ? `<a href="${laporan.detail_url}" class="text-xs text-emerald-600 hover:underline font-medium">Lihat detail &rarr;</a>` : ''}
         </div>
     `;
 }
@@ -49,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const laporans = JSON.parse(el.dataset.laporans || '[]');
 
-    const map = L.map('peta-map').setView([-6.2088, 106.8456], 13);
+    const map = L.map('peta-map').setView([5.5483, 95.3238], 13);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
@@ -69,7 +71,13 @@ document.addEventListener('DOMContentLoaded', () => {
         markers.set(laporan.id, { marker, laporan });
     });
 
-    if (laporans.length > 0) {
+    const highlightId = parseInt(el.dataset.highlight || '0', 10);
+
+    if (highlightId && markers.has(highlightId)) {
+        const { marker } = markers.get(highlightId);
+        map.setView(marker.getLatLng(), 16);
+        marker.openPopup();
+    } else if (laporans.length > 0) {
         const group = L.featureGroup([...markers.values()].map((m) => m.marker));
         map.fitBounds(group.getBounds().pad(0.1));
     }

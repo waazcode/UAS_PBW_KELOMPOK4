@@ -24,6 +24,8 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/peta', [LaporanController::class, 'peta'])->name('laporan.peta');
     Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
+    Route::get('/alamat/suggest', [LaporanController::class, 'suggestAlamat'])->name('alamat.suggest');
+    Route::get('/alamat/reverse', [LaporanController::class, 'reverseAlamat'])->name('alamat.reverse');
     Route::get('/laporan/buat', [LaporanController::class, 'create'])->name('laporan.create');
     Route::post('/laporan', [LaporanController::class, 'store'])->name('laporan.store');
     Route::get('/laporan/{laporan}', [LaporanController::class, 'show'])->name('laporan.show');

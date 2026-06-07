@@ -33,6 +33,18 @@
                         </span>
                     </div>
 
+                    @if ($laporan->alamat)
+                        <div>
+                            <h4 class="text-sm font-medium text-gray-500 uppercase mb-2">Alamat</h4>
+                            <p class="text-gray-700">{{ $laporan->alamat }}</p>
+                            @if ($laporan->latitude && $laporan->longitude)
+                                <a href="{{ route('laporan.peta', ['laporan' => $laporan->id]) }}" class="inline-block mt-2 text-sm text-emerald-600 hover:text-emerald-800 font-medium">
+                                    Lihat lokasi di peta &rarr;
+                                </a>
+                            @endif
+                        </div>
+                    @endif
+
                     <div>
                         <h4 class="text-sm font-medium text-gray-500 uppercase mb-2">Deskripsi</h4>
                         <p class="text-gray-700 whitespace-pre-line">{{ $laporan->deskripsi }}</p>

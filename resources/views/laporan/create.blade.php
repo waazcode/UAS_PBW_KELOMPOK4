@@ -30,6 +30,28 @@
                                     <x-input-error :messages="$errors->get('deskripsi')" class="mt-2" />
                                 </div>
 
+                                <div
+                                    class="relative"
+                                    id="alamat-wrapper"
+                                    data-suggest-url="{{ route('alamat.suggest') }}"
+                                    data-reverse-url="{{ route('alamat.reverse') }}"
+                                >
+                                    <x-input-label for="alamat" :value="__('Alamat')" />
+                                    <input
+                                        id="alamat"
+                                        name="alamat"
+                                        type="text"
+                                        value="{{ old('alamat') }}"
+                                        autocomplete="off"
+                                        placeholder="Contoh: Jl. Teuku Umar, Banda Aceh"
+                                        class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+                                        required
+                                    />
+                                    <div id="alamat-suggestions" class="hidden absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto"></div>
+                                    <p class="mt-1 text-sm text-gray-500">Ketik minimal 3 huruf. Saran alamat hanya untuk wilayah Banda Aceh.</p>
+                                    <x-input-error :messages="$errors->get('alamat')" class="mt-2" />
+                                </div>
+
                                 <div>
                                     <x-input-label for="kategori_id" :value="__('Kategori')" />
                                     <select id="kategori_id" name="kategori_id" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" required>
@@ -56,7 +78,7 @@
                                         Gunakan Lokasi Saya
                                     </button>
                                 </div>
-                                <p class="text-sm text-gray-500">Klik pada peta untuk menandai lokasi laporan.</p>
+                                <p class="text-sm text-gray-500">Pilih alamat dari saran atau klik peta untuk menandai lokasi.</p>
                                 <div id="pin-map" class="w-full rounded-lg border border-gray-200 z-0" style="height: 300px;"></div>
                                 <p class="text-sm">
                                     Koordinat:

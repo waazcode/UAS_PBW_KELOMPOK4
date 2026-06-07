@@ -21,6 +21,7 @@ class Laporan extends Model
         'foto',
         'latitude',
         'longitude',
+        'alamat',
         'status',
     ];
 

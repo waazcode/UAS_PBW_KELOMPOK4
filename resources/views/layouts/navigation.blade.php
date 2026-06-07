@@ -20,7 +20,7 @@
                         {{ __('Peta Laporan') }}
                     </x-nav-link>
                     @if (! Auth::user()->isAdmin())
-                        <x-nav-link :href="route('laporan.index')" :active="request()->routeIs('laporan.*')">
+                        <x-nav-link :href="route('laporan.index')" :active="request()->routeIs('laporan.index', 'laporan.create', 'laporan.show')">
                             {{ __('Laporan Saya') }}
                         </x-nav-link>
                     @endif
@@ -88,7 +88,7 @@
                 {{ __('Peta Laporan') }}
             </x-responsive-nav-link>
             @if (! Auth::user()->isAdmin())
-                <x-responsive-nav-link :href="route('laporan.index')" :active="request()->routeIs('laporan.*')">
+                <x-responsive-nav-link :href="route('laporan.index')" :active="request()->routeIs('laporan.index', 'laporan.create', 'laporan.show')">
                     {{ __('Laporan Saya') }}
                 </x-responsive-nav-link>
             @endif

@@ -44,8 +44,9 @@ class DatabaseSeeder extends Seeder
             'kategori_id' => $kategoris[0]->id,
             'judul' => 'Lampu jalan mati',
             'deskripsi' => 'Lampu jalan di depan kampus tidak menyala sejak 2 hari lalu.',
-            'latitude' => -6.2088,
-            'longitude' => 106.8456,
+            'alamat' => 'Jl. Teuku Umar No. 1, Banda Aceh',
+            'latitude' => 5.5483,
+            'longitude' => 95.3238,
             'status' => 'menunggu',
         ]);
 
@@ -54,8 +55,9 @@ class DatabaseSeeder extends Seeder
             'kategori_id' => $kategoris[0]->id,
             'judul' => 'Jalan berlubang',
             'deskripsi' => 'Ada lubang besar di jalan utama yang berbahaya untuk pengendara.',
-            'latitude' => -6.2146,
-            'longitude' => 106.8451,
+            'alamat' => 'Jl. Muhammad Hasan, Banda Aceh',
+            'latitude' => 5.5521,
+            'longitude' => 95.3172,
             'status' => 'proses',
         ]);
 
@@ -64,8 +66,9 @@ class DatabaseSeeder extends Seeder
             'kategori_id' => $kategoris[1]->id,
             'judul' => 'Sampah menumpuk',
             'deskripsi' => 'Tumpukan sampah di trotoar tidak diangkut selama seminggu.',
-            'latitude' => -6.2012,
-            'longitude' => 106.8385,
+            'alamat' => 'Jl. Soekarno-Hatta, Banda Aceh',
+            'latitude' => 5.5412,
+            'longitude' => 95.3315,
             'status' => 'selesai',
         ]);
     }

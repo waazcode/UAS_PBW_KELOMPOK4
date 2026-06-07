@@ -25,6 +25,7 @@
                             <thead>
                                 <tr>
                                     <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Judul</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Alamat</th>
                                     <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Kategori</th>
                                     <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
                                     <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Tanggal</th>
@@ -38,6 +39,7 @@
                                             <div class="font-medium">{{ $laporan->judul }}</div>
                                             <div class="text-sm text-gray-500">{{ Str::limit($laporan->deskripsi, 60) }}</div>
                                         </td>
+                                        <td class="px-4 py-3 text-sm text-gray-600">{{ Str::limit($laporan->alamat ?? '-', 40) }}</td>
                                         <td class="px-4 py-3">{{ $laporan->kategori->nama }}</td>
                                         <td class="px-4 py-3">
                                             <span class="px-2 py-1 text-xs rounded-full
@@ -49,13 +51,16 @@
                                             </span>
                                         </td>
                                         <td class="px-4 py-3 text-sm text-gray-500">{{ $laporan->created_at->format('d M Y') }}</td>
-                                        <td class="px-4 py-3">
+                                        <td class="px-4 py-3 space-x-3">
                                             <a href="{{ route('laporan.show', $laporan) }}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">Detail</a>
+                                            @if ($laporan->latitude && $laporan->longitude)
+                                                <a href="{{ route('laporan.peta', ['laporan' => $laporan->id]) }}" class="text-emerald-600 hover:text-emerald-800 text-sm font-medium">Lihat di Peta</a>
+                                            @endif
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="5" class="px-4 py-6 text-center text-gray-500">
+                                        <td colspan="6" class="px-4 py-6 text-center text-gray-500">
                                             Belum ada laporan. <a href="{{ route('laporan.create') }}" class="text-blue-600 hover:underline">Buat laporan pertama</a>
                                         </td>
                                     </tr>

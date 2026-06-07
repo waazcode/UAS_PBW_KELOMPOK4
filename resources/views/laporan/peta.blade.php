@@ -21,11 +21,17 @@
                 <div class="p-6">
                     <div class="flex flex-col sm:flex-row sm:items-end gap-4 mb-4">
                         <div class="flex-1">
-                            <h3 class="text-lg font-semibold text-gray-900 mb-1">Peta Laporan Lingkungan</h3>
+                            <h3 class="text-lg font-semibold text-gray-900 mb-1">
+                                {{ $isAdmin ? 'Peta Laporan Lingkungan' : 'Peta Laporan Saya' }}
+                            </h3>
                             <p class="text-sm text-gray-600">
-                                Klik marker untuk melihat detail. Menampilkan
-                                <span id="marker-count" class="font-semibold">{{ $laporans->count() }}</span>
-                                laporan.
+                                Klik marker untuk melihat detail.
+                                @if ($isAdmin)
+                                    Menampilkan <span id="marker-count" class="font-semibold">{{ $laporans->count() }}</span> laporan dari semua warga.
+                                @else
+                                    Menampilkan <span id="marker-count" class="font-semibold">{{ $laporans->count() }}</span> laporan Anda.
+                                    <a href="{{ route('laporan.index') }}" class="text-emerald-600 hover:underline">Lihat daftar laporan</a>
+                                @endif
                             </p>
                         </div>
 
@@ -69,6 +75,7 @@
                         class="w-full rounded-lg border border-gray-200 z-0"
                         style="height: 500px;"
                         data-laporans="{{ $laporans->toJson() }}"
+                        data-highlight="{{ $highlightId }}"
                     ></div>
                 </div>
             </div>
