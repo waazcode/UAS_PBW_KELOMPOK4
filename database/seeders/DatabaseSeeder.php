@@ -2,9 +2,11 @@
 
 namespace Database\Seeders;
 
+use App\Models\Laporan;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -15,11 +17,32 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        $admin = User::factory()->create([
+            'name' => 'Admin SafeZone',
+            'email' => 'admin@safezone.com',
+            'password' => Hash::make('password'),
+            'role' => 'admin',
+        ]);
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        $user = User::factory()->create([
+            'name' => 'User SafeZone',
+            'email' => 'user@safezone.com',
+            'password' => Hash::make('password'),
+            'role' => 'user',
+        ]);
+
+        Laporan::create([
+            'user_id' => $user->id,
+            'judul' => 'Lampu jalan mati',
+            'deskripsi' => 'Lampu jalan di depan kampus tidak menyala sejak 2 hari lalu.',
+            'status' => 'menunggu',
+        ]);
+
+        Laporan::create([
+            'user_id' => $user->id,
+            'judul' => 'Jalan berlubang',
+            'deskripsi' => 'Ada lubang besar di jalan utama yang berbahaya untuk pengendara.',
+            'status' => 'proses',
         ]);
     }
 }
