@@ -44,8 +44,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const markers = new Map();
 
     laporans.forEach((laporan) => {
+        const lat = Number(laporan.latitude);
+        const lng = Number(laporan.longitude);
+
+        if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+            return;
+        }
+
         const marker = L.marker(
-            [laporan.latitude, laporan.longitude],
+            [lat, lng],
             { icon: createColoredPinIcon(statusColors[laporan.status] ?? '#6b7280') }
         )
             .bindPopup(buildPopupContent(laporan))
