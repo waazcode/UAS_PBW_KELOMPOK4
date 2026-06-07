@@ -3,10 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Kategori;
+use App\Models\Komentar;
 use App\Models\Laporan;
+use App\Support\DisplayText;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\View\View;
 
@@ -43,11 +46,11 @@ class LaporanController extends Controller
                 'id' => $laporan->id,
                 'judul' => $laporan->judul,
                 'deskripsi' => $laporan->deskripsi,
-                'alamat' => $laporan->alamat,
+                'alamat' => $laporan->alamat_tampilan,
                 'status' => $laporan->status,
                 'status_label' => $laporan->status_label,
                 'kategori_id' => $laporan->kategori_id,
-                'kategori_nama' => $laporan->kategori->nama,
+                'kategori_nama' => $laporan->kategori->nama_tampilan,
                 'latitude' => $laporan->latitude,
                 'longitude' => $laporan->longitude,
                 'pelapor' => $laporan->user->name,
@@ -69,48 +72,55 @@ class LaporanController extends Controller
     public function create(): View
     {
         $kategoris = Kategori::orderBy('nama')->get();
+        $lainnyaKategoriId = $kategoris->firstWhere('nama', 'Lainnya')?->id;
 
-        return view('laporan.create', compact('kategoris'));
+        return view('laporan.create', compact('kategoris', 'lainnyaKategoriId'));
     }
 
     public function suggestAlamat(Request $request): JsonResponse
     {
         $request->validate([
-            'q' => ['required', 'string', 'min:3', 'max:200'],
+            'q' => ['required', 'string', 'min:2', 'max:200'],
         ]);
 
-        $query = $request->q;
-        if (! str_contains(strtolower($query), 'aceh')) {
-            $query .= ', Aceh';
-        }
+        $query = trim($request->q);
+        $cacheKey = 'alamat_suggest:'.md5(mb_strtolower($query));
 
-        $bounds = self::ACEH_BOUNDS;
+        $results = Cache::remember($cacheKey, now()->addMinutes(30), function () use ($query) {
+            $searchQuery = $query;
+            if (! str_contains(strtolower($searchQuery), 'aceh')) {
+                $searchQuery .= ', Aceh';
+            }
 
-        $response = Http::withHeaders([
-            'User-Agent' => config('app.name', 'SafeZone').'/1.0',
-        ])->get('https://nominatim.openstreetmap.org/search', [
-            'q' => $query,
-            'format' => 'json',
-            'addressdetails' => 1,
-            'limit' => 8,
-            'countrycodes' => 'id',
-            'viewbox' => "{$bounds['min_lng']},{$bounds['max_lat']},{$bounds['max_lng']},{$bounds['min_lat']}",
-            'bounded' => 1,
-        ]);
+            $bounds = self::ACEH_BOUNDS;
 
-        if (! $response->successful()) {
-            return response()->json([]);
-        }
+            $response = Http::withHeaders([
+                'User-Agent' => config('app.name', 'SafeZone').'/1.0',
+            ])->timeout(5)->get('https://nominatim.openstreetmap.org/search', [
+                'q' => $searchQuery,
+                'format' => 'json',
+                'addressdetails' => 0,
+                'limit' => 6,
+                'countrycodes' => 'id',
+                'viewbox' => "{$bounds['min_lng']},{$bounds['max_lat']},{$bounds['max_lng']},{$bounds['min_lat']}",
+                'bounded' => 1,
+            ]);
 
-        $results = collect($response->json())
-            ->filter(fn (array $item) => $this->isWithinAceh((float) $item['lat'], (float) $item['lon']))
-            ->map(fn (array $item) => [
-                'label' => $item['display_name'],
-                'lat' => (float) $item['lat'],
-                'lng' => (float) $item['lon'],
-            ])
-            ->take(6)
-            ->values();
+            if (! $response->successful()) {
+                return [];
+            }
+
+            return collect($response->json())
+                ->filter(fn (array $item) => $this->isWithinAceh((float) $item['lat'], (float) $item['lon']))
+                ->map(fn (array $item) => [
+                    'label' => DisplayText::format($item['display_name']),
+                    'lat' => (float) $item['lat'],
+                    'lng' => (float) $item['lon'],
+                ])
+                ->take(6)
+                ->values()
+                ->all();
+        });
 
         return response()->json($results);
     }
@@ -139,7 +149,7 @@ class LaporanController extends Controller
         }
 
         return response()->json([
-            'label' => $response->json('display_name'),
+            'label' => DisplayText::format($response->json('display_name')),
         ]);
     }
 
@@ -149,11 +159,26 @@ class LaporanController extends Controller
             'judul' => ['required', 'string', 'max:255'],
             'deskripsi' => ['required', 'string'],
             'kategori_id' => ['required', 'exists:kategoris,id'],
+            'kategori_lain' => ['nullable', 'string', 'max:100'],
             'alamat' => ['required', 'string', 'max:500'],
             'foto' => ['required', 'image', 'max:2048'],
             'latitude' => ['required', 'numeric', 'between:-90,90'],
             'longitude' => ['required', 'numeric', 'between:-180,180'],
         ]);
+
+        $lainnyaId = Kategori::where('nama', 'Lainnya')->value('id');
+        $kategoriId = (int) $validated['kategori_id'];
+
+        if ($lainnyaId && $kategoriId === (int) $lainnyaId) {
+            $request->validate([
+                'kategori_lain' => ['required', 'string', 'max:100'],
+            ]);
+
+            $kategori = Kategori::firstOrCreate([
+                'nama' => DisplayText::format($request->kategori_lain),
+            ]);
+            $kategoriId = $kategori->id;
+        }
 
         if (! $this->isWithinAceh((float) $validated['latitude'], (float) $validated['longitude'])) {
             return back()
@@ -165,10 +190,10 @@ class LaporanController extends Controller
 
         Laporan::create([
             'user_id' => auth()->id(),
-            'kategori_id' => $validated['kategori_id'],
+            'kategori_id' => $kategoriId,
             'judul' => $validated['judul'],
             'deskripsi' => $validated['deskripsi'],
-            'alamat' => $validated['alamat'],
+            'alamat' => DisplayText::format($validated['alamat']),
             'foto' => $fotoPath,
             'latitude' => $validated['latitude'],
             'longitude' => $validated['longitude'],
@@ -182,9 +207,37 @@ class LaporanController extends Controller
     {
         abort_unless($laporan->user_id === auth()->id() || auth()->user()->isAdmin(), 403);
 
-        $laporan->load(['kategori', 'user']);
+        $laporan->load(['kategori', 'user', 'komentars.user']);
 
-        return view('laporan.show', compact('laporan'));
+        return view('laporan.show', [
+            'laporan' => $laporan,
+            'backUrl' => auth()->user()->isAdmin()
+                ? route('admin.laporan.index')
+                : route('laporan.index'),
+            'isAdminView' => auth()->user()->isAdmin(),
+        ]);
+    }
+
+    public function storeKomentar(Request $request, Laporan $laporan): RedirectResponse
+    {
+        abort_unless($laporan->user_id === auth()->id() || auth()->user()->isAdmin(), 403);
+
+        $validated = $request->validate([
+            'isi' => ['required', 'string', 'max:1000'],
+        ]);
+
+        Komentar::create([
+            'laporan_id' => $laporan->id,
+            'user_id' => auth()->id(),
+            'isi' => $validated['isi'],
+        ]);
+
+        $redirectRoute = auth()->user()->isAdmin()
+            ? route('admin.laporan.show', $laporan)
+            : route('laporan.show', $laporan);
+
+        return redirect($redirectRoute)
+            ->with('success', 'Komentar berhasil ditambahkan.');
     }
 
     private function isWithinAceh(float $lat, float $lng): bool
