@@ -16,6 +16,9 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('laporan.peta')" :active="request()->routeIs('laporan.peta')">
+                        {{ __('Peta Laporan') }}
+                    </x-nav-link>
                     @if (! Auth::user()->isAdmin())
                         <x-nav-link :href="route('laporan.index')" :active="request()->routeIs('laporan.*')">
                             {{ __('Laporan Saya') }}
@@ -80,6 +83,9 @@
         <div class="pt-2 pb-3 space-y-1">
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('laporan.peta')" :active="request()->routeIs('laporan.peta')">
+                {{ __('Peta Laporan') }}
             </x-responsive-nav-link>
             @if (! Auth::user()->isAdmin())
                 <x-responsive-nav-link :href="route('laporan.index')" :active="request()->routeIs('laporan.*')">

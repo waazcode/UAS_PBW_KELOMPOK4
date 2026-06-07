@@ -44,6 +44,8 @@ class DatabaseSeeder extends Seeder
             'kategori_id' => $kategoris[0]->id,
             'judul' => 'Lampu jalan mati',
             'deskripsi' => 'Lampu jalan di depan kampus tidak menyala sejak 2 hari lalu.',
+            'latitude' => -6.2088,
+            'longitude' => 106.8456,
             'status' => 'menunggu',
         ]);
 
@@ -52,7 +54,19 @@ class DatabaseSeeder extends Seeder
             'kategori_id' => $kategoris[0]->id,
             'judul' => 'Jalan berlubang',
             'deskripsi' => 'Ada lubang besar di jalan utama yang berbahaya untuk pengendara.',
+            'latitude' => -6.2146,
+            'longitude' => 106.8451,
             'status' => 'proses',
+        ]);
+
+        Laporan::create([
+            'user_id' => $user->id,
+            'kategori_id' => $kategoris[1]->id,
+            'judul' => 'Sampah menumpuk',
+            'deskripsi' => 'Tumpukan sampah di trotoar tidak diangkut selama seminggu.',
+            'latitude' => -6.2012,
+            'longitude' => 106.8385,
+            'status' => 'selesai',
         ]);
     }
 }

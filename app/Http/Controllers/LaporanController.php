@@ -76,9 +76,12 @@ class LaporanController extends Controller
             'judul' => $validated['judul'],
             'deskripsi' => $validated['deskripsi'],
             'foto' => $fotoPath,
+            'latitude' => $validated['latitude'],
+            'longitude' => $validated['longitude'],
         ]);
 
-        return redirect()->route('laporan.index')->with('success', 'Laporan berhasil dikirim.');
+        return redirect()->route('laporan.peta')
+            ->with('success', 'Laporan berhasil dikirim! Terima kasih atas partisipasi Anda.');
     }
 
     public function show(Laporan $laporan): View
