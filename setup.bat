@@ -33,6 +33,10 @@ echo Jalankan migration + seed...
 php artisan migrate --seed
 
 echo.
+echo Buat symlink storage (untuk foto laporan)...
+php artisan storage:link
+
+echo.
 echo Build assets frontend...
 call npm run build
 

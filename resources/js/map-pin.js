@@ -2,6 +2,20 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { ACEH_BOUNDS, ACEH_PIN_CENTER, createColoredPinIcon, isWithinAceh, statusColors } from './map-utils';
 
+function formatDisplayText(text) {
+    return (text || '').replace(/-/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
+function formatAlamatLines(label) {
+    const formatted = formatDisplayText(label);
+    const parts = formatted.split(',').map((part) => part.trim()).filter(Boolean);
+
+    return {
+        utama: parts[0] || formatted,
+        detail: parts.slice(1).join(', '),
+    };
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const el = document.getElementById('pin-map');
     if (!el) return;
@@ -30,6 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let marker = null;
     let suggestTimer = null;
+    let suggestAbort = null;
     let activeIndex = -1;
     let currentSuggestions = [];
 
@@ -77,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const res = await fetch(`${reverseUrl}?lat=${lat}&lng=${lng}`);
             const data = await res.json();
             if (data.label) {
-                alamatInput.value = data.label;
+                alamatInput.value = formatDisplayText(data.label);
             }
         } catch {
             // Abaikan jika reverse geocode gagal.
@@ -90,6 +105,24 @@ document.addEventListener('DOMContentLoaded', () => {
         suggestionsEl.innerHTML = '';
         activeIndex = -1;
         currentSuggestions = [];
+        if (suggestAbort) {
+            suggestAbort.abort();
+            suggestAbort = null;
+        }
+    }
+
+    function showLoadingSuggestions() {
+        if (!suggestionsEl) return;
+        suggestionsEl.innerHTML = `
+            <div class="px-4 py-3 text-sm text-neptune flex items-center gap-2">
+                <svg class="animate-spin h-4 w-4 text-neptune" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                </svg>
+                Mencari alamat...
+            </div>
+        `;
+        suggestionsEl.classList.remove('hidden');
     }
 
     function renderSuggestions(items) {
@@ -99,21 +132,25 @@ document.addEventListener('DOMContentLoaded', () => {
         activeIndex = -1;
 
         if (items.length === 0) {
-            suggestionsEl.innerHTML = '<div class="px-4 py-3 text-sm text-gray-500">Alamat tidak ditemukan di wilayah Aceh.</div>';
+            suggestionsEl.innerHTML = '<div class="px-4 py-3 text-sm text-grape-mist">Alamat tidak ditemukan di wilayah Aceh.</div>';
             suggestionsEl.classList.remove('hidden');
             return;
         }
 
-        suggestionsEl.innerHTML = items.map((item, index) => `
+        suggestionsEl.innerHTML = items.map((item, index) => {
+            const lines = formatAlamatLines(item.label);
+
+            return `
             <button
                 type="button"
-                class="alamat-option w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-emerald-50 border-b border-gray-100 last:border-b-0"
+                class="alamat-option w-full text-left px-4 py-3 text-sm text-midnight hover:bg-pacific/30 border-b border-grape-mist/30 last:border-b-0"
                 data-index="${index}"
             >
-                <span class="block font-medium text-gray-900">${item.label.split(',')[0]}</span>
-                <span class="block text-xs text-gray-500 mt-0.5">${item.label}</span>
+                <span class="block font-semibold text-midnight">${lines.utama}</span>
+                ${lines.detail ? `<span class="block text-xs text-neptune/70 mt-0.5">${lines.detail}</span>` : ''}
             </button>
-        `).join('');
+        `;
+        }).join('');
 
         suggestionsEl.classList.remove('hidden');
 
@@ -128,7 +165,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!suggestionsEl) return;
 
         suggestionsEl.querySelectorAll('.alamat-option').forEach((btn, index) => {
-            btn.classList.toggle('bg-emerald-50', index === activeIndex);
+            btn.classList.toggle('bg-pacific/40', index === activeIndex);
         });
     }
 
@@ -136,7 +173,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const item = currentSuggestions[index];
         if (!item || !alamatInput) return;
 
-        alamatInput.value = item.label;
+        alamatInput.value = formatDisplayText(item.label);
         hideSuggestions();
         placeMarker({ lat: item.lat, lng: item.lng });
     }
@@ -144,12 +181,24 @@ document.addEventListener('DOMContentLoaded', () => {
     async function searchAddress(query) {
         if (!suggestUrl) return;
 
+        if (suggestAbort) {
+            suggestAbort.abort();
+        }
+        suggestAbort = new AbortController();
+
         try {
-            const res = await fetch(`${suggestUrl}?q=${encodeURIComponent(query)}`);
+            const res = await fetch(`${suggestUrl}?q=${encodeURIComponent(query)}`, {
+                signal: suggestAbort.signal,
+                headers: { Accept: 'application/json' },
+            });
             const data = await res.json();
             renderSuggestions(data);
-        } catch {
-            hideSuggestions();
+        } catch (err) {
+            if (err.name !== 'AbortError') {
+                hideSuggestions();
+            }
+        } finally {
+            suggestAbort = null;
         }
     }
 
@@ -158,12 +207,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         clearTimeout(suggestTimer);
 
-        if (query.length < 3) {
+        if (query.length < 2) {
             hideSuggestions();
             return;
         }
 
-        suggestTimer = setTimeout(() => searchAddress(query), 400);
+        showLoadingSuggestions();
+        suggestTimer = setTimeout(() => searchAddress(query), 150);
     });
 
     alamatInput?.addEventListener('keydown', (e) => {

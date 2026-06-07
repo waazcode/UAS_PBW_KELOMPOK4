@@ -4,10 +4,10 @@ import { ACEH_BOUNDS, ACEH_CENTER, createColoredPinIcon, statusColors } from './
 
 function buildPopupContent(laporan) {
     const statusClass = {
-        menunggu: 'bg-yellow-100 text-yellow-800',
-        proses: 'bg-blue-100 text-blue-800',
-        selesai: 'bg-green-100 text-green-800',
-    }[laporan.status] ?? 'bg-gray-100 text-gray-800';
+        menunggu: 'bg-pacific/60 text-neptune',
+        proses: 'bg-neptune/15 text-neptune',
+        selesai: 'bg-isotonic/30 text-midnight',
+    }[laporan.status] ?? 'bg-grape-mist/40 text-midnight';
 
     return `
         <div class="min-w-[200px]">
@@ -19,7 +19,7 @@ function buildPopupContent(laporan) {
             ${laporan.alamat ? `<p class="text-sm text-gray-600 mb-1"><strong>Alamat:</strong> ${laporan.alamat}</p>` : ''}
             ${laporan.deskripsi ? `<p class="text-sm text-gray-600 mb-1">${laporan.deskripsi}</p>` : ''}
             <p class="text-xs text-gray-400 mb-2">Oleh ${laporan.pelapor} &middot; ${laporan.created_at}</p>
-            ${laporan.detail_url ? `<a href="${laporan.detail_url}" class="text-xs text-emerald-600 hover:underline font-medium">Lihat detail &rarr;</a>` : ''}
+            ${laporan.detail_url ? `<a href="${laporan.detail_url}" class="inline-flex items-center justify-center px-3 py-1.5 text-xs font-bold text-isotonic bg-midnight border-2 border-midnight rounded-lg hover:bg-neptune transition mt-2 shadow-sm">Lihat Detail</a>` : ''}
         </div>
     `;
 }

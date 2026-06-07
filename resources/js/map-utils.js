@@ -5,9 +5,9 @@ export const ACEH_PIN_CENTER = [5.5483, 95.3238];
 export const ACEH_BOUNDS = L.latLngBounds([2.0, 95.0], [6.3, 98.3]);
 
 export const statusColors = {
-    menunggu: '#eab308',
-    proses: '#3b82f6',
-    selesai: '#22c55e',
+    menunggu: '#C0D6EA',
+    proses: '#11425D',
+    selesai: '#DDFF55',
 };
 
 export function isWithinAceh(lat, lng) {
