@@ -43,12 +43,12 @@
                                         type="text"
                                         value="{{ old('alamat') }}"
                                         autocomplete="off"
-                                        placeholder="Contoh: Jl. Teuku Umar, Banda Aceh"
+                                        placeholder="Contoh: Jl. Teuku Umar, Banda Aceh atau Lhokseumawe"
                                         class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
                                         required
                                     />
                                     <div id="alamat-suggestions" class="hidden absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto"></div>
-                                    <p class="mt-1 text-sm text-gray-500">Ketik minimal 3 huruf. Saran alamat hanya untuk wilayah Banda Aceh.</p>
+                                    <p class="mt-1 text-sm text-gray-500">Ketik minimal 3 huruf. Saran alamat hanya untuk wilayah Aceh.</p>
                                     <x-input-error :messages="$errors->get('alamat')" class="mt-2" />
                                 </div>
 

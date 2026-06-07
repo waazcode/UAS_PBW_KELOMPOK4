@@ -1,12 +1,6 @@
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-    iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-    iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-    shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-});
+import { ACEH_BOUNDS, ACEH_PIN_CENTER, createColoredPinIcon, isWithinAceh, statusColors } from './map-utils';
 
 document.addEventListener('DOMContentLoaded', () => {
     const el = document.getElementById('pin-map');
@@ -22,14 +16,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const suggestUrl = alamatWrapper?.dataset.suggestUrl;
     const reverseUrl = alamatWrapper?.dataset.reverseUrl;
 
-    const BANDA_ACEH_CENTER = [5.5483, 95.3238];
-    const BANDA_ACEH_BOUNDS = L.latLngBounds([5.48, 95.26], [5.60, 95.38]);
+    const defaultLat = parseFloat(latInput?.value) || ACEH_PIN_CENTER[0];
+    const defaultLng = parseFloat(lngInput?.value) || ACEH_PIN_CENTER[1];
+    const pinIcon = createColoredPinIcon(statusColors.menunggu);
 
-    const defaultLat = parseFloat(latInput?.value) || BANDA_ACEH_CENTER[0];
-    const defaultLng = parseFloat(lngInput?.value) || BANDA_ACEH_CENTER[1];
-
-    const map = L.map('pin-map', { maxBounds: BANDA_ACEH_BOUNDS, minZoom: 12 })
-        .setView([defaultLat, defaultLng], 14);
+    const map = L.map('pin-map', { maxBounds: ACEH_BOUNDS, minZoom: 7 })
+        .setView([defaultLat, defaultLng], 11);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
@@ -51,29 +43,30 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function isWithinBandaAceh(lat, lng) {
-        return lat >= 5.48 && lat <= 5.60 && lng >= 95.26 && lng <= 95.38;
-    }
-
     function placeMarker(latlng, moveMap = true) {
-        if (!isWithinBandaAceh(latlng.lat, latlng.lng)) {
-            alert('Lokasi harus berada di wilayah Banda Aceh.');
+        if (!isWithinAceh(latlng.lat, latlng.lng)) {
+            alert('Lokasi harus berada di wilayah Aceh.');
             return;
         }
 
         if (marker) {
             marker.setLatLng(latlng);
         } else {
-            marker = L.marker(latlng, { draggable: true }).addTo(map);
+            marker = L.marker(latlng, { icon: pinIcon, draggable: true }).addTo(map);
             marker.on('dragend', async () => {
                 const pos = marker.getLatLng();
+                if (!isWithinAceh(pos.lat, pos.lng)) {
+                    alert('Lokasi harus berada di wilayah Aceh.');
+                    marker.setLatLng(latlng);
+                    return;
+                }
                 updateCoords(pos.lat, pos.lng);
                 await fillAddressFromCoords(pos.lat, pos.lng);
             });
         }
         updateCoords(latlng.lat, latlng.lng);
         if (moveMap) {
-            map.setView(latlng, Math.max(map.getZoom(), 16));
+            map.setView(latlng, Math.max(map.getZoom(), 14));
         }
     }
 
@@ -106,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
         activeIndex = -1;
 
         if (items.length === 0) {
-            suggestionsEl.innerHTML = '<div class="px-4 py-3 text-sm text-gray-500">Alamat tidak ditemukan.</div>';
+            suggestionsEl.innerHTML = '<div class="px-4 py-3 text-sm text-gray-500">Alamat tidak ditemukan di wilayah Aceh.</div>';
             suggestionsEl.classList.remove('hidden');
             return;
         }

@@ -64,10 +64,19 @@
                         </div>
                     </div>
 
-                    <div class="flex flex-wrap gap-3 mb-4 text-xs">
-                        <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-yellow-500"></span> Menunggu</span>
-                        <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-blue-500"></span> Proses</span>
-                        <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-green-500"></span> Selesai</span>
+                    <div class="flex flex-wrap gap-4 mb-4 text-xs text-gray-600">
+                        <span class="flex items-center gap-1.5">
+                            <svg viewBox="0 0 36 48" width="14" height="18"><path d="M18 0C9.716 0 3 6.716 3 15c0 11.25 15 33 15 33s15-21.75 15-33C33 6.716 26.284 0 18 0z" fill="#eab308" stroke="#fff" stroke-width="2"/><circle cx="18" cy="15" r="6" fill="#fff"/></svg>
+                            Menunggu
+                        </span>
+                        <span class="flex items-center gap-1.5">
+                            <svg viewBox="0 0 36 48" width="14" height="18"><path d="M18 0C9.716 0 3 6.716 3 15c0 11.25 15 33 15 33s15-21.75 15-33C33 6.716 26.284 0 18 0z" fill="#3b82f6" stroke="#fff" stroke-width="2"/><circle cx="18" cy="15" r="6" fill="#fff"/></svg>
+                            Proses
+                        </span>
+                        <span class="flex items-center gap-1.5">
+                            <svg viewBox="0 0 36 48" width="14" height="18"><path d="M18 0C9.716 0 3 6.716 3 15c0 11.25 15 33 15 33s15-21.75 15-33C33 6.716 26.284 0 18 0z" fill="#22c55e" stroke="#fff" stroke-width="2"/><circle cx="18" cy="15" r="6" fill="#fff"/></svg>
+                            Selesai
+                        </span>
                     </div>
 
                     <div

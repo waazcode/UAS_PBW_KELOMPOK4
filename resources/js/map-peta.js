@@ -1,34 +1,6 @@
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-
-const BANDA_ACEH_CENTER = [5.5483, 95.3238];
-const BANDA_ACEH_BOUNDS = L.latLngBounds([5.48, 95.26], [5.60, 95.38]);
-
-const statusColors = {
-    menunggu: '#eab308',
-    proses: '#3b82f6',
-    selesai: '#22c55e',
-};
-
-function createColoredPinIcon(color) {
-    const width = 36;
-    const height = 48;
-
-    return L.divIcon({
-        className: 'custom-pin-marker',
-        html: `
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 48" width="${width}" height="${height}"
-                style="display:block;filter:drop-shadow(0 2px 4px rgba(0,0,0,.35));">
-                <path d="M18 0C9.716 0 3 6.716 3 15c0 11.25 15 33 15 33s15-21.75 15-33C33 6.716 26.284 0 18 0z"
-                    fill="${color}" stroke="#ffffff" stroke-width="2"/>
-                <circle cx="18" cy="15" r="6" fill="#ffffff"/>
-            </svg>
-        `,
-        iconSize: [width, height],
-        iconAnchor: [width / 2, height],
-        popupAnchor: [0, -height + 6],
-    });
-}
+import { ACEH_BOUNDS, ACEH_CENTER, createColoredPinIcon, statusColors } from './map-utils';
 
 function buildPopupContent(laporan) {
     const statusClass = {
@@ -59,10 +31,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const laporans = JSON.parse(el.dataset.laporans || '[]');
 
     const map = L.map('peta-map', {
-        maxBounds: BANDA_ACEH_BOUNDS,
+        maxBounds: ACEH_BOUNDS,
         maxBoundsViscosity: 1.0,
-        minZoom: 12,
-    }).setView(BANDA_ACEH_CENTER, 14);
+        minZoom: 7,
+    }).setView(ACEH_CENTER, 8);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
@@ -86,11 +58,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (highlightId && markers.has(highlightId)) {
         const { marker } = markers.get(highlightId);
-        map.setView(marker.getLatLng(), 16);
+        map.setView(marker.getLatLng(), 14);
         marker.openPopup();
     } else if (laporans.length > 0) {
         const group = L.featureGroup([...markers.values()].map((m) => m.marker));
-        map.fitBounds(group.getBounds().pad(0.15), { maxZoom: 16 });
+        map.fitBounds(group.getBounds().pad(0.15), { maxZoom: 12 });
     }
 
     const statusFilter = document.getElementById('filter-status');

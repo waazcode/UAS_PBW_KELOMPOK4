@@ -12,15 +12,11 @@ use Illuminate\View\View;
 
 class LaporanController extends Controller
 {
-    private const BANDA_ACEH_LAT = 5.5483;
-
-    private const BANDA_ACEH_LNG = 95.3238;
-
-    private const BANDA_ACEH_BOUNDS = [
-        'min_lat' => 5.48,
-        'max_lat' => 5.60,
-        'min_lng' => 95.26,
-        'max_lng' => 95.38,
+    private const ACEH_BOUNDS = [
+        'min_lat' => 2.0,
+        'max_lat' => 6.3,
+        'min_lng' => 95.0,
+        'max_lng' => 98.3,
     ];
     public function index(): View
     {
@@ -84,11 +80,11 @@ class LaporanController extends Controller
         ]);
 
         $query = $request->q;
-        if (! str_contains(strtolower($query), 'banda aceh')) {
-            $query .= ', Banda Aceh';
+        if (! str_contains(strtolower($query), 'aceh')) {
+            $query .= ', Aceh';
         }
 
-        $bounds = self::BANDA_ACEH_BOUNDS;
+        $bounds = self::ACEH_BOUNDS;
 
         $response = Http::withHeaders([
             'User-Agent' => config('app.name', 'SafeZone').'/1.0',
@@ -107,7 +103,7 @@ class LaporanController extends Controller
         }
 
         $results = collect($response->json())
-            ->filter(fn (array $item) => $this->isWithinBandaAceh((float) $item['lat'], (float) $item['lon']))
+            ->filter(fn (array $item) => $this->isWithinAceh((float) $item['lat'], (float) $item['lon']))
             ->map(fn (array $item) => [
                 'label' => $item['display_name'],
                 'lat' => (float) $item['lat'],
@@ -126,7 +122,7 @@ class LaporanController extends Controller
             'lng' => ['required', 'numeric', 'between:-180,180'],
         ]);
 
-        if (! $this->isWithinBandaAceh((float) $request->lat, (float) $request->lng)) {
+        if (! $this->isWithinAceh((float) $request->lat, (float) $request->lng)) {
             return response()->json(['label' => null], 422);
         }
 
@@ -159,10 +155,10 @@ class LaporanController extends Controller
             'longitude' => ['required', 'numeric', 'between:-180,180'],
         ]);
 
-        if (! $this->isWithinBandaAceh((float) $validated['latitude'], (float) $validated['longitude'])) {
+        if (! $this->isWithinAceh((float) $validated['latitude'], (float) $validated['longitude'])) {
             return back()
                 ->withInput()
-                ->withErrors(['latitude' => 'Lokasi harus berada di wilayah Banda Aceh.']);
+                ->withErrors(['latitude' => 'Lokasi harus berada di wilayah Aceh.']);
         }
 
         $fotoPath = $request->file('foto')->store('laporan', 'public');
@@ -191,9 +187,9 @@ class LaporanController extends Controller
         return view('laporan.show', compact('laporan'));
     }
 
-    private function isWithinBandaAceh(float $lat, float $lng): bool
+    private function isWithinAceh(float $lat, float $lng): bool
     {
-        $bounds = self::BANDA_ACEH_BOUNDS;
+        $bounds = self::ACEH_BOUNDS;
 
         return $lat >= $bounds['min_lat']
             && $lat <= $bounds['max_lat']
