@@ -15,9 +15,23 @@ class LaporanAdminController extends Controller
      */
     public function index(): View
     {
-        $laporans = Laporan::with(['user', 'kategori'])->latest()->get();
+        $laporans = Laporan::with(['user', 'kategori'])
+            ->withCount('komentars')
+            ->latest()
+            ->get();
 
         return view('admin.laporan.index', compact('laporans'));
+    }
+
+    public function show(Laporan $laporan): View
+    {
+        $laporan->load(['kategori', 'user', 'komentars.user']);
+
+        return view('laporan.show', [
+            'laporan' => $laporan,
+            'backUrl' => route('admin.laporan.index'),
+            'isAdminView' => true,
+        ]);
     }
 
     /**

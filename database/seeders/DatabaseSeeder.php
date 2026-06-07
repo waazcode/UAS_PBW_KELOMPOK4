@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Kategori;
+use App\Models\Komentar;
 use App\Models\Laporan;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -39,7 +40,7 @@ class DatabaseSeeder extends Seeder
             'Lainnya',
         ])->map(fn (string $nama) => Kategori::create(['nama' => $nama]));
 
-        Laporan::create([
+        $laporan1 = Laporan::create([
             'user_id' => $user->id,
             'kategori_id' => $kategoris[0]->id,
             'judul' => 'Lampu jalan mati',
@@ -48,6 +49,12 @@ class DatabaseSeeder extends Seeder
             'latitude' => 5.5483,
             'longitude' => 95.3238,
             'status' => 'menunggu',
+        ]);
+
+        Komentar::create([
+            'laporan_id' => $laporan1->id,
+            'user_id' => $admin->id,
+            'isi' => 'Terima kasih atas laporannya. Tim kami akan segera mengecek lokasi tersebut.',
         ]);
 
         Laporan::create([

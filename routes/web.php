@@ -29,10 +29,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/laporan/buat', [LaporanController::class, 'create'])->name('laporan.create');
     Route::post('/laporan', [LaporanController::class, 'store'])->name('laporan.store');
     Route::get('/laporan/{laporan}', [LaporanController::class, 'show'])->name('laporan.show');
+    Route::post('/laporan/{laporan}/komentar', [LaporanController::class, 'storeKomentar'])->name('laporan.komentar.store');
 });
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/laporan', [LaporanAdminController::class, 'index'])->name('laporan.index');
+    Route::get('/laporan/{laporan}', [LaporanAdminController::class, 'show'])->name('laporan.show');
     Route::patch('/laporan/{laporan}/status', [LaporanAdminController::class, 'updateStatus'])->name('laporan.update-status');
 });
 
