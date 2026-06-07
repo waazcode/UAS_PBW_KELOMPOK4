@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Kategori;
 use App\Models\Laporan;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -31,8 +32,16 @@ class DatabaseSeeder extends Seeder
             'role' => 'user',
         ]);
 
+        $kategoris = collect([
+            'Infrastruktur',
+            'Kebersihan',
+            'Keamanan',
+            'Lainnya',
+        ])->map(fn (string $nama) => Kategori::create(['nama' => $nama]));
+
         Laporan::create([
             'user_id' => $user->id,
+            'kategori_id' => $kategoris[0]->id,
             'judul' => 'Lampu jalan mati',
             'deskripsi' => 'Lampu jalan di depan kampus tidak menyala sejak 2 hari lalu.',
             'status' => 'menunggu',
@@ -40,6 +49,7 @@ class DatabaseSeeder extends Seeder
 
         Laporan::create([
             'user_id' => $user->id,
+            'kategori_id' => $kategoris[0]->id,
             'judul' => 'Jalan berlubang',
             'deskripsi' => 'Ada lubang besar di jalan utama yang berbahaya untuk pengendara.',
             'status' => 'proses',
