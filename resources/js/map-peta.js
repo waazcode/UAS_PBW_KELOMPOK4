@@ -1,12 +1,8 @@
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-    iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-    iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-    shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-});
+const BANDA_ACEH_CENTER = [5.5483, 95.3238];
+const BANDA_ACEH_BOUNDS = L.latLngBounds([5.48, 95.26], [5.60, 95.38]);
 
 const statusColors = {
     menunggu: '#eab308',
@@ -14,12 +10,23 @@ const statusColors = {
     selesai: '#22c55e',
 };
 
-function createColoredIcon(color) {
+function createColoredPinIcon(color) {
+    const width = 36;
+    const height = 48;
+
     return L.divIcon({
-        className: 'custom-marker',
-        html: `<div style="background:${color};width:14px;height:14px;border-radius:50%;border:2px solid white;box-shadow:0 1px 4px rgba(0,0,0,.4);"></div>`,
-        iconSize: [14, 14],
-        iconAnchor: [7, 7],
+        className: 'custom-pin-marker',
+        html: `
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 48" width="${width}" height="${height}"
+                style="display:block;filter:drop-shadow(0 2px 4px rgba(0,0,0,.35));">
+                <path d="M18 0C9.716 0 3 6.716 3 15c0 11.25 15 33 15 33s15-21.75 15-33C33 6.716 26.284 0 18 0z"
+                    fill="${color}" stroke="#ffffff" stroke-width="2"/>
+                <circle cx="18" cy="15" r="6" fill="#ffffff"/>
+            </svg>
+        `,
+        iconSize: [width, height],
+        iconAnchor: [width / 2, height],
+        popupAnchor: [0, -height + 6],
     });
 }
 
@@ -51,7 +58,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const laporans = JSON.parse(el.dataset.laporans || '[]');
 
-    const map = L.map('peta-map').setView([5.5483, 95.3238], 13);
+    const map = L.map('peta-map', {
+        maxBounds: BANDA_ACEH_BOUNDS,
+        maxBoundsViscosity: 1.0,
+        minZoom: 12,
+    }).setView(BANDA_ACEH_CENTER, 14);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
@@ -63,7 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
     laporans.forEach((laporan) => {
         const marker = L.marker(
             [laporan.latitude, laporan.longitude],
-            { icon: createColoredIcon(statusColors[laporan.status] ?? '#6b7280') }
+            { icon: createColoredPinIcon(statusColors[laporan.status] ?? '#6b7280') }
         )
             .bindPopup(buildPopupContent(laporan))
             .addTo(map);
@@ -79,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
         marker.openPopup();
     } else if (laporans.length > 0) {
         const group = L.featureGroup([...markers.values()].map((m) => m.marker));
-        map.fitBounds(group.getBounds().pad(0.1));
+        map.fitBounds(group.getBounds().pad(0.15), { maxZoom: 16 });
     }
 
     const statusFilter = document.getElementById('filter-status');
