@@ -25,16 +25,12 @@
                     <div class="flex flex-col lg:flex-row lg:items-end gap-4 mb-5">
                         <div class="flex-1">
                             <h3 class="text-lg font-bold text-midnight mb-1">
-                                {{ $isAdmin ? 'Peta Laporan Lingkungan' : 'Peta Laporan Saya' }}
+                                Peta Laporan Lingkungan
                             </h3>
                             <p class="text-sm text-neptune/70">
                                 Klik marker untuk melihat detail.
-                                @if ($isAdmin)
-                                    Menampilkan <span id="marker-count" class="font-semibold text-midnight">{{ $laporans->count() }}</span> laporan dari semua warga.
-                                @else
-                                    Menampilkan <span id="marker-count" class="font-semibold text-midnight">{{ $laporans->count() }}</span> laporan Anda.
-                                    <a href="{{ route('laporan.index') }}" class="btn-outline btn-sm">Lihat Daftar</a>
-                                @endif
+                                Menampilkan <span id="marker-count" class="font-semibold text-midnight">{{ $laporans->count() }}</span> laporan dari seluruh warga.
+                                <a href="{{ route('laporan.index') }}" class="btn-outline btn-sm">Lihat Daftar</a>
                             </p>
                         </div>
 
@@ -57,13 +53,11 @@
                                     @endforeach
                                 </select>
                             </div>
-                            @if (! Auth::user()->isAdmin())
-                                <div class="flex items-end">
-                                    <a href="{{ route('laporan.create') }}" class="btn-primary !text-sm">
-                                        + Buat Laporan
-                                    </a>
-                                </div>
-                            @endif
+                            <div class="flex items-end">
+                                <a href="{{ route('laporan.create') }}" class="btn-primary !text-sm">
+                                    + Buat Laporan
+                                </a>
+                            </div>
                         </div>
                     </div>
 

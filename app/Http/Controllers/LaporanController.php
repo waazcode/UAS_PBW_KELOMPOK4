@@ -24,7 +24,6 @@ class LaporanController extends Controller
     public function index(): View
     {
         $laporans = Laporan::with(['kategori', 'user'])
-            ->where('user_id', auth()->id())
             ->latest()
             ->get();
 
@@ -33,15 +32,11 @@ class LaporanController extends Controller
 
     public function peta(): View
     {
-        $query = Laporan::with(['kategori', 'user'])
+        $laporans = Laporan::with(['kategori', 'user'])
             ->whereNotNull('latitude')
-            ->whereNotNull('longitude');
-
-        if (! auth()->user()->isAdmin()) {
-            $query->where('user_id', auth()->id());
-        }
-
-        $laporans = $query->latest()->get()
+            ->whereNotNull('longitude')
+            ->latest()
+            ->get()
             ->map(fn (Laporan $laporan) => [
                 'id' => $laporan->id,
                 'judul' => $laporan->judul,
@@ -65,7 +60,6 @@ class LaporanController extends Controller
             'kategoris' => $kategoris,
             'statuses' => Laporan::STATUS,
             'highlightId' => request()->integer('laporan') ?: null,
-            'isAdmin' => auth()->user()->isAdmin(),
         ]);
     }
 
@@ -205,8 +199,6 @@ class LaporanController extends Controller
 
     public function show(Laporan $laporan): View
     {
-        abort_unless($laporan->user_id === auth()->id() || auth()->user()->isAdmin(), 403);
-
         $laporan->load(['kategori', 'user', 'komentars.user']);
 
         return view('laporan.show', [
@@ -220,8 +212,6 @@ class LaporanController extends Controller
 
     public function storeKomentar(Request $request, Laporan $laporan): RedirectResponse
     {
-        abort_unless($laporan->user_id === auth()->id() || auth()->user()->isAdmin(), 403);
-
         $validated = $request->validate([
             'isi' => ['required', 'string', 'max:1000'],
         ]);

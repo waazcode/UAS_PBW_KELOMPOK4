@@ -15,11 +15,9 @@
                         <x-nav-link :href="route('laporan.peta')" :active="request()->routeIs('laporan.peta')">
                             {{ __('Peta') }}
                         </x-nav-link>
-                        @if (! Auth::user()->isAdmin())
-                            <x-nav-link :href="route('laporan.index')" :active="request()->routeIs('laporan.index', 'laporan.create', 'laporan.show')">
-                                {{ __('Laporan Saya') }}
-                            </x-nav-link>
-                        @endif
+                        <x-nav-link :href="route('laporan.index')" :active="request()->routeIs('laporan.index', 'laporan.create', 'laporan.show')">
+                            {{ __('Laporan') }}
+                        </x-nav-link>
                         @if (Auth::user()->isAdmin())
                             <x-nav-link :href="route('admin.laporan.index')" :active="request()->routeIs('admin.laporan.index', 'admin.laporan.show')">
                                 {{ __('Kelola Laporan') }}
@@ -92,11 +90,9 @@
                 <x-responsive-nav-link :href="route('laporan.peta')" :active="request()->routeIs('laporan.peta')">
                     {{ __('Peta') }}
                 </x-responsive-nav-link>
-                @if (! Auth::user()->isAdmin())
-                    <x-responsive-nav-link :href="route('laporan.index')" :active="request()->routeIs('laporan.index', 'laporan.create', 'laporan.show')">
-                        {{ __('Laporan Saya') }}
-                    </x-responsive-nav-link>
-                @endif
+                <x-responsive-nav-link :href="route('laporan.index')" :active="request()->routeIs('laporan.index', 'laporan.create', 'laporan.show')">
+                    {{ __('Laporan') }}
+                </x-responsive-nav-link>
                 @if (Auth::user()->isAdmin())
                     <x-responsive-nav-link :href="route('admin.laporan.index')" :active="request()->routeIs('admin.laporan.index', 'admin.laporan.show')">
                         {{ __('Kelola Laporan') }}

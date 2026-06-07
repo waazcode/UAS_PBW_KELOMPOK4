@@ -95,7 +95,7 @@
                                 Komentar
                                 <span class="text-sm font-normal text-grape-mist">({{ $laporan->komentars->count() }})</span>
                             </h3>
-                            <p class="text-xs text-grape-mist mt-1">Komentar terlihat oleh pelapor dan admin</p>
+                            <p class="text-xs text-grape-mist mt-1">Semua warga dapat melihat dan berpartisipasi dalam diskusi</p>
                         </div>
 
                         <div class="p-5 sm:p-6 space-y-4 max-h-96 overflow-y-auto">
@@ -109,8 +109,10 @@
                                             <span class="font-semibold text-midnight text-sm">{{ $komentar->user->name }}</span>
                                             @if ($komentar->user->isAdmin())
                                                 <span class="text-xs px-2 py-0.5 bg-isotonic/30 text-midnight rounded-full font-medium">Admin</span>
-                                            @else
+                                            @elseif ($komentar->user_id === $laporan->user_id)
                                                 <span class="text-xs px-2 py-0.5 bg-pacific/40 text-neptune rounded-full font-medium">Pelapor</span>
+                                            @else
+                                                <span class="text-xs px-2 py-0.5 bg-pacific/40 text-neptune rounded-full font-medium">Warga</span>
                                             @endif
                                             <span class="text-xs text-grape-mist">{{ $komentar->created_at->format('d M Y, H:i') }}</span>
                                         </div>

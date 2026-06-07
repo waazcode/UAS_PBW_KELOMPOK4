@@ -31,17 +31,17 @@
                 </div>
             @else
                 <div class="card p-6 sm:p-8">
-                    <h3 class="text-lg font-bold text-midnight mb-2">Laporkan Masalah</h3>
-                    <p class="text-neptune/70 mb-5">Laporkan masalah di lingkungan Anda dengan melampirkan foto.</p>
+                    <h3 class="text-lg font-bold text-midnight mb-2">Komunitas SafeZone</h3>
+                    <p class="text-neptune/70 mb-5">Lihat laporan warga lain, berikan komentar, atau buat laporan baru.</p>
                     <div class="flex flex-col sm:flex-row flex-wrap gap-3">
                         <a href="{{ route('laporan.create') }}" class="btn-primary justify-center">
                             Buat Laporan
                         </a>
+                        <a href="{{ route('laporan.index') }}" class="btn-outline justify-center">
+                            Semua Laporan
+                        </a>
                         <a href="{{ route('laporan.peta') }}" class="btn-outline justify-center">
                             Lihat Peta
-                        </a>
-                        <a href="{{ route('laporan.index') }}" class="btn-outline justify-center">
-                            Laporan Saya
                         </a>
                     </div>
                 </div>

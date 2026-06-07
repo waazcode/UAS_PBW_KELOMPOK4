@@ -3,9 +3,9 @@
         <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
             <div>
                 <h2 class="text-xl sm:text-2xl font-bold text-midnight">
-                    {{ __('Daftar Laporan') }}
+                    {{ __('Semua Laporan') }}
                 </h2>
-                <p class="text-sm text-neptune/70 mt-1">Kelola dan pantau semua laporan Anda</p>
+                <p class="text-sm text-neptune/70 mt-1">Lihat dan diskusikan laporan dari seluruh warga</p>
             </div>
             <a href="{{ route('laporan.create') }}" class="btn-primary shrink-0">
                 + Buat Laporan
@@ -29,7 +29,7 @@
                         </svg>
                     </div>
                     <h3 class="text-lg font-semibold text-midnight mb-2">Belum ada laporan</h3>
-                    <p class="text-neptune/70 mb-6">Mulai laporkan masalah di lingkungan sekitar Anda.</p>
+                    <p class="text-neptune/70 mb-6">Jadilah yang pertama melaporkan masalah di lingkungan sekitar.</p>
                     <a href="{{ route('laporan.create') }}" class="btn-primary">
                         Buat Laporan Pertama
                     </a>
@@ -64,8 +64,14 @@
                                     </p>
                                 @endif
 
-                                <p class="text-xs text-grape-mist mt-2">
-                                    {{ $laporan->created_at->format('d M Y') }}
+                                <p class="text-xs text-grape-mist mt-2 flex flex-wrap gap-x-3 gap-y-1">
+                                    <span class="flex items-center gap-1">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                        </svg>
+                                        {{ $laporan->user->name }}
+                                    </span>
+                                    <span>{{ $laporan->created_at->format('d M Y') }}</span>
                                 </p>
                             </div>
 
