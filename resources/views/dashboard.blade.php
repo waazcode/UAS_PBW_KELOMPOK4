@@ -34,7 +34,15 @@
                 <div class="bg-blue-50 border border-blue-200 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">
                         <h3 class="text-lg font-semibold text-blue-800 mb-2">Laporkan Masalah</h3>
-                        <p class="text-blue-700">Fitur buat laporan akan tersedia di tahap berikutnya. Nantikan update dari tim!</p>
+                        <p class="text-blue-700 mb-4">Laporkan masalah di lingkungan Anda dengan melampirkan foto.</p>
+                        <div class="flex gap-3">
+                            <a href="{{ route('laporan.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition">
+                                Buat Laporan
+                            </a>
+                            <a href="{{ route('laporan.index') }}" class="inline-flex items-center px-4 py-2 bg-white text-blue-700 text-sm font-medium rounded-lg border border-blue-300 hover:bg-blue-100 transition">
+                                Lihat Laporan Saya
+                            </a>
+                        </div>
                     </div>
                 </div>
             @endif

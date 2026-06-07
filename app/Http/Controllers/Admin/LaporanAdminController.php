@@ -15,7 +15,7 @@ class LaporanAdminController extends Controller
      */
     public function index(): View
     {
-        $laporans = Laporan::with('user')->latest()->get();
+        $laporans = Laporan::with(['user', 'kategori'])->latest()->get();
 
         return view('admin.laporan.index', compact('laporans'));
     }
