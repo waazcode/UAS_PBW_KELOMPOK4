@@ -14,8 +14,20 @@ export default {
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
+            colors: {
+                cheviot: '#F6F2E8',
+                'grape-mist': '#C5C0C9',
+                neptune: '#11425D',
+                midnight: '#002233',
+                isotonic: '#DDFF55',
+                pacific: '#C0D6EA',
+            },
         },
     },
 
-    plugins: [forms],
+    plugins: [
+        forms({
+            strategy: 'class',
+        }),
+    ],
 };

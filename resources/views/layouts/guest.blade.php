@@ -5,26 +5,26 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+        <title>{{ config('app.name', 'SafeZone') }}</title>
 
-        <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700&display=swap" rel="stylesheet" />
 
-        <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans text-gray-900 antialiased">
-        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
-            <div>
-                <a href="/" class="flex flex-col items-center gap-2">
-                    <x-application-logo class="w-14 h-14 text-emerald-600" />
-                    <span class="text-xl font-bold text-emerald-700">SafeZone</span>
-                </a>
-            </div>
+    <body class="font-sans text-midnight antialiased bg-cheviot">
+        <div class="min-h-screen flex flex-col">
+            @include('layouts.navigation')
 
-            <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg">
-                {{ $slot }}
+            <div class="flex-1 flex flex-col justify-center items-center px-4 py-12">
+                <div class="w-full max-w-md">
+                    <div class="card p-6 sm:p-8">
+                        {{ $slot }}
+                    </div>
+                    <p class="text-center text-sm text-grape-mist mt-6">
+                        &copy; {{ date('Y') }} SafeZone
+                    </p>
+                </div>
             </div>
         </div>
     </body>
